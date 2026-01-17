@@ -19,6 +19,8 @@ function App() {
   const [emailTemplate, setEmailTemplate] = useState(EMAIL_TEMPLATES[0]);
   const [body, setBody] = useState("");
 
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api/automation";
+
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
       <h1 className="text-3xl font-bold mb-6">Email Automation</h1>
@@ -88,7 +90,7 @@ function App() {
           className="px-6 py-2 rounded bg-blue-600 text-white font-semibold shadow"
           disabled={inputMode === "excel" ? !excelFile : inputMode === "manual" ? !singleEmail : true}
           onClick={async () => {
-            let url = "http://localhost:8080/api/automation";
+            const url = API_BASE_URL;
             if (inputMode === "excel" && excelFile) {
               const formData = new FormData();
               formData.append("type", selectedType);

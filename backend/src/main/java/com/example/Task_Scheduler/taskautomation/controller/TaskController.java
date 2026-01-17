@@ -19,7 +19,7 @@ import org.apache.poi.ss.usermodel.*;
 
 @RestController
 @RequestMapping("/api/automation")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class TaskController {
     // Only keep one TaskService field (already present above)
 
