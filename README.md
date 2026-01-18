@@ -27,6 +27,10 @@ This project is a full-stack platform for automating recurring email tasks. User
 - **Containerized Deployment:**
   - Docker support for easy, reproducible setup and deployment
 
+## Live Demo
+
+Frontend (Vercel): https://task-automation-9677u3ii5-prerna1001s-projects.vercel.app/
+
 ## Resume Points & Justification
 
 **• Built a full-stack platform for managing recurring daily tasks using Spring Boot on Java 21, storing task schedules and completion history in Firebase (NoSQL) to support fast reads and flexible data structures.**
