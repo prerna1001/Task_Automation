@@ -13,13 +13,17 @@ This project is a full-stack platform for automating recurring email tasks. User
   - Monthly summary emails
   - Custom follow-up emails (3, 7, 14 days)
 
-- **Flexible Recurrence:**
+- **Flexible Recurrence & Scheduling UI:**
   - Users choose the frequency and template for each email task
-  - Scheduler triggers emails at the correct interval
+  - For **Daily reminder**, users pick only a **time of day**; the system runs it every day at that time.
+  - For **Weekly / Monthly / 3, 7, 14‑day follow‑up** templates, users pick a **start date + time**, which becomes the first run.
+  - The backend stores this as `nextRunDate` and the scheduler triggers emails at the correct times.
 
-- **Task Management:**
-  - View, create, and manage scheduled email tasks in the React frontend
-  - Track completion history and status
+- **Task Management UI (Manage Emails tab):**
+  - Separate **Create Automation** and **Manage Emails** tabs in the React frontend
+  - View all automated email tasks (template, recipients, body, next run time)
+  - Edit existing automations inline (template, recipients, body, schedule)
+  - Delete automations that are no longer needed
 
 - **Cloud Storage:**
   - All schedules and history are stored in Firebase Firestore for fast access and analytics
@@ -52,8 +56,8 @@ My project automates recurring email reminders, with a robust backend for schedu
 
 ## How It Works
 
-1. **User creates an email task in the frontend, choosing a template and recurrence (daily, weekly, etc.).**
-2. **Backend stores the task in Firestore and schedules it for automatic execution.**
+1. **User creates an email task in the frontend, choosing a template and schedule (time only for daily, or date + time for others).**
+2. **Backend stores the task in Firestore and schedules it for automatic execution based on `nextRunDate`.**
 3. **Java Scheduler triggers the email at the correct time, sending it to the specified recipient(s).**
 4. **Completion history is logged for analytics and tracking.**
 

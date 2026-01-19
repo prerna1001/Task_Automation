@@ -38,7 +38,8 @@ public class TaskController {
         task.setUserEmail(request.getEmail());
         task.setRecipients(java.util.Collections.singletonList(request.getEmail()));
         task.setPayload(Map.of("body", request.getBody()));
-        task.setNextRunDate(java.time.Instant.now().toString());
+        String nextRun = computeNextRun(request.getScheduledAt());
+        task.setNextRunDate(nextRun);
         taskService.createTask(task);
         reminderScheduler.scheduleTask(task);
         logger.info("Task created with ID: {} and recipients: {}", task.getId(), task.getRecipients());
@@ -53,6 +54,7 @@ public class TaskController {
     public String sendExcelEmail(@RequestParam("type") String type,
                                  @RequestParam("template") String template,
                                  @RequestParam("body") String body,
+                                 @RequestParam(value = "scheduledAt", required = false) String scheduledAt,
                                  @RequestParam("file") MultipartFile file)
             throws ExecutionException, InterruptedException {
         try {
@@ -96,7 +98,8 @@ public class TaskController {
             task.setTemplateType(template);
             task.setRecipients(recipients);
             task.setPayload(Map.of("body", body, "fileName", file.getOriginalFilename()));
-            task.setNextRunDate(java.time.Instant.now().toString());
+            String nextRun = computeNextRun(scheduledAt);
+            task.setNextRunDate(nextRun);
             taskService.createTask(task);
             reminderScheduler.scheduleTask(task);
             return "Bulk email request stored and scheduled for " + recipients.size() + " recipients";
@@ -126,6 +129,7 @@ static class EmailRequest {
     private String template;
     private String body;
     private String email;
+    private String scheduledAt;
     // getters and setters
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
@@ -135,6 +139,8 @@ static class EmailRequest {
     public void setBody(String body) { this.body = body; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+    public String getScheduledAt() { return scheduledAt; }
+    public void setScheduledAt(String scheduledAt) { this.scheduledAt = scheduledAt; }
 }
 
 
@@ -151,12 +157,38 @@ static class ReminderRequest {
     public void setBody(String body) { this.body = body; }
 }
 
+    // Helper to compute next run time from optional scheduledAt
+    private String computeNextRun(String scheduledAt) {
+        try {
+            if (scheduledAt != null && !scheduledAt.isBlank()) {
+                java.time.LocalDateTime ldt = java.time.LocalDateTime.parse(scheduledAt);
+                java.time.Instant instant = ldt.atZone(java.time.ZoneId.systemDefault()).toInstant();
+                return instant.toString();
+            }
+        } catch (Exception e) {
+            // Fallback to now if parsing fails
+        }
+        return java.time.Instant.now().toString();
+    }
+
     @Autowired
     private TaskService taskService;
 
     @GetMapping
     public List<Task> getAllTasks() throws ExecutionException, InterruptedException {
         return taskService.getAllTasks();
+    }
+
+    @GetMapping("/emails")
+    public List<Task> getAllEmailTasks() throws ExecutionException, InterruptedException {
+        List<Task> allTasks = taskService.getAllTasks();
+        List<Task> emailTasks = new ArrayList<>();
+        for (Task task : allTasks) {
+            if ("EMAIL".equals(task.getAutomationType())) {
+                emailTasks.add(task);
+            }
+        }
+        return emailTasks;
     }
 
     @GetMapping("/{id}")
