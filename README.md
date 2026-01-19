@@ -33,7 +33,7 @@ This project is a full-stack platform for automating recurring email tasks. User
 
 ## Live Demo
 
-Frontend (Vercel): https://task-automation-9677u3ii5-prerna1001s-projects.vercel.app/
+Frontend (Vercel): https://task-automation-git-main-prerna1001s-projects.vercel.app/
 
 ---
 
